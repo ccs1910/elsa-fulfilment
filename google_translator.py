@@ -110,12 +110,12 @@ def translate_text(query, source_lang_code, target_lang_code):
             q=query
         ).execute()
         
-        print("translate_text: 1s")
+        print("translate_text: 1s",translations)
         translation = translations['translations'][0]
         print("translate_text: 2s")
         if 'detectedSourceLanguage' in translation.keys():
             source_lang_code = translation['detectedSourceLanguage']
-        print("translate_text: 3s")
+        print("translate_text: 3s",translation.keys())
         resp = random.choice(_TRANSLATE_RESULT).format(
             text=translation['translatedText'],
             fromLang=language_code_dict[source_lang_code],
