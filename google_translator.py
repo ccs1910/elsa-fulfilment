@@ -33,7 +33,6 @@ def translate(text, source_lang, target_lang):
     """
 
     # Validate the languages provided by the user
-    print ("validate Language")
     source_lang_code = validate_language(source_lang)
     target_lang_code = validate_language(target_lang)
     print ("from",source_lang_code,"to",target_lang_code)
@@ -42,17 +41,20 @@ def translate(text, source_lang, target_lang):
     if not source_lang_code and not target_lang_code:
         response = random.choice(_TRANSLATE_UNKNOWN_LANGUAGE)
 
+    print("x1")
     # If there is no text but two valid languages ask the user for input
     if not text and source_lang_code and target_lang_code:
         response = random.choice(_TRANSLATE_W_FROM_TO).format(
             lang_from=language_code_dict[source_lang_code],
             lang_to=language_code_dict[target_lang_code])
 
+    print("x2")
     # If there is no text but a valid target language ask the user for input
     if not text and target_lang_code:
         response = random.choice(_TRANSLATE_W_TO).format(
             lang=language_code_dict[target_lang_code])
 
+    print("x3")
     # If there is no text but a valid source language assume the target
     # language is English if the source language is not English
     if (not text and
@@ -61,6 +63,7 @@ def translate(text, source_lang, target_lang):
             not target_lang_code):
         target_lang_code = 'en'
 
+    print("x4")
     # If there is no text, no target language and the source language is English
     # ask the user for text
     if (not text and
@@ -70,27 +73,33 @@ def translate(text, source_lang, target_lang):
         response = random.choice(_TRANSLATE_W_FROM).format(
             lang=language_code_dict[source_lang_code])
 
+    print("x5")
     # If there is no text and no languages
     if not text and not source_lang_code and not target_lang_code:
         response = random.choice(_TRANSLATE_W)
 
+    print("x6")
     # If there is text but no languages
     if text and not source_lang_code and not target_lang_code:
         response = random.choice(_TRANSLATE_INTO_W)
 
+    print("x7")
     # If there is text and a valid target language but no source language
     if text and not source_lang_code and target_lang_code:
         response = translate_text(text, source_lang_code, target_lang_code)
 
+    print("x8")
     # If there is text and 2 valid languages return the translation
     if text and source_lang_code and target_lang_code:
         response = translate_text(text, source_lang_code, target_lang_code)
 
+    print("x9")
     # If no response is generated from the any of the 8 possible combinations
     # (3 booleans = 2^3 = 8 options) return an error to the user
     if not response:
         response = random.choice(_TRANSLATE_ERROR)
 
+    print("response:",response)
     return response
 
 
@@ -100,6 +109,8 @@ def translate_text(query, source_lang_code, target_lang_code):
     Takes a text to be translated, source language and target language code
     2 letter ISO code found in language_list.py
     """
+    
+    print("translate_text:",query,"from",source_lang_code,"to",target_lang_code)
 
     try:
         translations = TRANSLATION_SERVICE.translations().list(
@@ -116,8 +127,10 @@ def translate_text(query, source_lang_code, target_lang_code):
             toLang=language_code_dict[target_lang_code])
     except (HTTPError, URLError, HTTPException):
         resp = random.choice(_TRANSLATE_NETWORK_ERROR)
+        print("Error HTTP or URL:",resp)
     except Exception:
         resp = random.choice(_TRANSLATE_ERROR)
+        print("Translate Error:",resp)
     return resp
 
 
