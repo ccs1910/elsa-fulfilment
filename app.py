@@ -50,16 +50,23 @@ def webhook():
 
 
 def processRequest(req):
-    if req.get("result").get("action") != "yahooWeatherForecast":
+    if req.get("result").get("action") == "yahooWeatherForecast":
+        baseurl = "https://query.yahooapis.com/v1/public/yql?"
+        yql_query = makeYqlQuery(req)
+        if yql_query is None:
+            return {}
+        yql_url = baseurl + urlencode({'q': yql_query}) + "&format=json"
+        result = urlopen(yql_url).read()
+        data = json.loads(result)
+        res = makeYahooWeatherResult(data)
+        
+    elif req.get("result").get("action") == "digitalmomtakingnotes":
+        baseurl = "https://aaa7512d.ngrok.io/taking_notes"
+        content = urlopen(baseurl).read()
+        res = makeDigitalMoMResult()
+    else:
         return {}
-    baseurl = "https://query.yahooapis.com/v1/public/yql?"
-    yql_query = makeYqlQuery(req)
-    if yql_query is None:
-        return {}
-    yql_url = baseurl + urlencode({'q': yql_query}) + "&format=json"
-    result = urlopen(yql_url).read()
-    data = json.loads(result)
-    res = makeWebhookResult(data)
+        
     return res
 
 
@@ -73,7 +80,7 @@ def makeYqlQuery(req):
     return "select * from weather.forecast where woeid in (select woeid from geo.places(1) where text='" + city + "')"
 
 
-def makeWebhookResult(data):
+def makeYahooWeatherResult(data):
     query = data.get('query')
     if query is None:
         return {}
@@ -110,6 +117,23 @@ def makeWebhookResult(data):
         # "data": data,
         # "contextOut": [],
         "source": "apiai-weather-webhook-sample"
+    }
+    
+def makeDigitalMoMResult(data):
+    
+    # print(json.dumps(item, indent=4))
+
+    speech = "Let's start take notes"
+
+    print("Response:")
+    print(speech)
+
+    return {
+        "speech": speech,
+        "displayText": speech,
+        # "data": data,
+        # "contextOut": [],
+        "source": "elsa-digitalMoM"
     }
 
 
