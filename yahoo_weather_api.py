@@ -4,6 +4,16 @@ Created on Nov 20, 2017
 @author: csantoso
 @reference : https://github.com/dialogflow/fulfillment-webhook-weather-python
 '''
+from __future__ import print_function
+from future.standard_library import install_aliases
+install_aliases()
+
+from urllib.parse import urlparse, urlencode
+from urllib.request import urlopen, Request
+from urllib.error import HTTPError
+
+import json
+import os
 
 def makeYqlQuery(req):
     result = req.get("result")
