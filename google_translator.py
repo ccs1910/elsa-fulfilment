@@ -33,9 +33,11 @@ def translate(text, source_lang, target_lang):
     """
 
     # Validate the languages provided by the user
+    print ("validate Language")
     source_lang_code = validate_language(source_lang)
     target_lang_code = validate_language(target_lang)
-
+    print ("from",source_lang_code,"to",target_lang_code)
+    
     # If both languages are invalid or no languages are provided tell the user
     if not source_lang_code and not target_lang_code:
         response = random.choice(_TRANSLATE_UNKNOWN_LANGUAGE)

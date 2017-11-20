@@ -84,6 +84,8 @@ def processRequest(req):
         text = req['result']['parameters'].get('text')
         source_lang = req['result']['parameters'].get('lang-from')
         target_lang = req['result']['parameters'].get('lang-to')
+        
+        print(text,",",source_lang,",",target_lang)
 
         # Fulfill the translation and get a response
         output = google_translator.translate(text, source_lang, target_lang)
