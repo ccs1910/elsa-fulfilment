@@ -111,27 +111,16 @@ def translate_text(query, source_lang_code, target_lang_code):
             q=query
         ).execute()
         
-        print("translate_text: 1s",translations)
         translation = translations['translations'][0]
-        print("translate_text: 2s",translation)
+        
         if 'detectedSourceLanguage' in translation.keys():
             source_lang_code = translation['detectedSourceLanguage']
-            print("translate_text: 3s",source_lang_code)
-        print("translate_text: 4s",translation.keys())
-        
-        print("translate_text: 5s",translation['translatedText'])
-        
-        print("translate_text: 6s",language_code_dict[source_lang_code])        
-        
-        print("translate_text: 7s",language_code_dict[target_lang_code])
         
         resp = random.choice(_TRANSLATE_RESULT).format(
             text=translation['translatedText'],
             fromLang=language_code_dict[source_lang_code],
             toLang=language_code_dict[target_lang_code])
         
-        print("translate_text: 8s",resp)
-    
     except (HTTPError, URLError, HTTPException):
         resp = random.choice(_TRANSLATE_NETWORK_ERROR)
         print("Error HTTP or URL:",resp)
