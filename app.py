@@ -14,6 +14,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
+'''
+@author : csantoso
+@references : 
+translator : https://github.com/dialogflow/fulfillment-webhook-translate-python/blob/master/APP.py
+weather : https://github.com/dialogflow/fulfillment-webhook-weather-python
+'''
+
 from __future__ import print_function
 from future.standard_library import install_aliases
 install_aliases()
@@ -24,14 +32,19 @@ from urllib.error import HTTPError
 
 import json
 import os
+import random
 
-from flask import Flask
-from flask import request
-from flask import make_response
+from flask import Flask, jsonify, make_response, request
 
-# Flask app should start in global layout
-app = Flask(__name__)
+from googleapiclient.discovery import build
 
+import google_translator
+import yahoo_weather_api
+
+
+# Flask APP should start in global layout
+APP = Flask(__name__)
+LOG = APP.logger
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
@@ -50,74 +63,45 @@ def webhook():
 
 
 def processRequest(req):
-    if req.get("result").get("action") == "yahooWeatherForecast":
+    
+    action = req.get("result").get("action")
+    
+    if action == "yahooWeatherForecast":
         baseurl = "https://query.yahooapis.com/v1/public/yql?"
-        yql_query = makeYqlQuery(req)
+        yql_query = yahoo_weather_api.makeYqlQuery(req)
         if yql_query is None:
             return {}
         yql_url = baseurl + urlencode({'q': yql_query}) + "&format=json"
         result = urlopen(yql_url).read()
         data = json.loads(result)
-        res = makeYahooWeatherResult(data)
+        res = yahoo_weather_api.makeYahooWeatherResult(data)
         
-    elif req.get("result").get("action") == "digitalmomtakingnotes":
+    elif action == "digitalmomtakingnotes":
         baseurl = "https://aaa7512d.ngrok.io/taking_notes"
         content = urlopen(baseurl).read()
         res = makeDigitalMoMResult()
+        
+    elif action == "translate.text" :
+        # Get the parameters for the translation
+        text = req['result']['parameters'].get('text')
+        source_lang = req['result']['parameters'].get('lang-from')
+        target_lang = req['result']['parameters'].get('lang-to')
+
+        # Fulfill the translation and get a response
+        output = google_translator.translate(text, source_lang, target_lang)
+
+        # Compose the response to API.AI
+        res = {'speech': output,
+               'displayText': output,
+               'contextOut': req['result']['contexts']}
     else:
-        return {}
+        # If the request is not to the translate.text action throw an error
+        LOG.error('Unexpected action requested: %s', json.dumps(req))
+        res = {'speech': 'error', 'displayText': 'error'}
         
     return res
 
 
-def makeYqlQuery(req):
-    result = req.get("result")
-    parameters = result.get("parameters")
-    city = parameters.get("geo-city")
-    if city is None:
-        return None
-
-    return "select * from weather.forecast where woeid in (select woeid from geo.places(1) where text='" + city + "')"
-
-
-def makeYahooWeatherResult(data):
-    query = data.get('query')
-    if query is None:
-        return {}
-
-    result = query.get('results')
-    if result is None:
-        return {}
-
-    channel = result.get('channel')
-    if channel is None:
-        return {}
-
-    item = channel.get('item')
-    location = channel.get('location')
-    units = channel.get('units')
-    if (location is None) or (item is None) or (units is None):
-        return {}
-
-    condition = item.get('condition')
-    if condition is None:
-        return {}
-
-    # print(json.dumps(item, indent=4))
-
-    speech = "Today the weather in " + location.get('city') + ": " + condition.get('text') + \
-             ", And the temperature is " + condition.get('temp') + " " + units.get('temperature')
-
-    print("Response:")
-    print(speech)
-
-    return {
-        "speech": speech,
-        "displayText": speech,
-        # "data": data,
-        # "contextOut": [],
-        "source": "apiai-weather-webhook-sample"
-    }
     
 def makeDigitalMoMResult(data):
     
@@ -140,6 +124,6 @@ def makeDigitalMoMResult(data):
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
 
-    print("Starting app on port %d" % port)
+    print("Starting APP on port %d" % port)
 
-    app.run(debug=False, port=port, host='0.0.0.0')
+    APP.run(debug=False, port=port, host='0.0.0.0')
