@@ -36,8 +36,6 @@ import random
 
 from flask import Flask, jsonify, make_response, request
 
-from googleapiclient.discovery import build
-
 import google_translator
 import yahoo_weather_api
 

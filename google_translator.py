@@ -12,6 +12,7 @@ from translate_response import (_TRANSLATE_ERROR, _TRANSLATE_INTO_W,
                                 _TRANSLATE_W_FROM, _TRANSLATE_W_FROM_TO,
                                 _TRANSLATE_W_TO)
 
+from googleapiclient.discovery import build
 
 ##------------------------- Google Translate API ----------------------##
 
