@@ -4,6 +4,7 @@ Created on Nov 20, 2017
 @author: csantoso
 @reference : https://github.com/dialogflow/fulfillment-webhook-translate-python/blob/master/app.py
 '''
+import random
 from language_list import _LANGUAGE_CODE_LIST as language_code_dict
 from language_list import _LANGUAGE_LIST as language_dict
 from translate_response import (_TRANSLATE_ERROR, _TRANSLATE_INTO_W,
@@ -114,7 +115,6 @@ def translate_text(query, source_lang_code, target_lang_code):
         translation = translations['translations'][0]
         print("translate_text: 2s",translation)
         if 'detectedSourceLanguage' in translation.keys():
-            print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
             source_lang_code = translation['detectedSourceLanguage']
             print("translate_text: 3s",source_lang_code)
         print("translate_text: 4s",translation.keys())
