@@ -74,10 +74,10 @@ def processRequest(req):
         data = json.loads(result)
         res = yahoo_weather_api.makeYahooWeatherResult(data)
         
-    elif action == "digitalmomtakingnotes":
-        baseurl = "https://aaa7512d.ngrok.io/taking_notes"
-        content = urlopen(baseurl).read()
-        res = makeDigitalMoMResult()
+#     elif action == "digitalmomtakingnotes":
+#         baseurl = "https://aaa7512d.ngrok.io/taking_notes"
+#         content = urlopen(baseurl).read()
+#         res = camera_response()
         
     elif action == "translate.text" :
         # Get the parameters for the translation
@@ -94,20 +94,28 @@ def processRequest(req):
         res = {'speech': output,
                'displayText': output,
                'contextOut': req['result']['contexts']}
+    
+    elif action == "camera_turn_on":
+        baseurl = "https://aaa7512d.ngrok.io/camera_turn_on"
+        content = urlopen(baseurl).read()
+        speech = "See your Raspberry camera is ON"
+        res = camera_response(speech)
+
+    elif action == "camera_turn_off":    
+        baseurl = "https://aaa7512d.ngrok.io/camera_turn_off"
+        content = urlopen(baseurl).read()
+        speech = "I just turn off your raspberry Camera"
+        res = camera_response(speech)
     else:
         # If the request is not to the translate.text action throw an error
         LOG.error('Unexpected action requested: %s', json.dumps(req))
         res = {'speech': 'error', 'displayText': 'error'}
         
     return res
-
-
     
-def makeDigitalMoMResult(data):
+def camera_response(speech):
     
     # print(json.dumps(item, indent=4))
-
-    speech = "Let's start take notes"
 
     print("Response:")
     print(speech)
@@ -117,7 +125,7 @@ def makeDigitalMoMResult(data):
         "displayText": speech,
         # "data": data,
         # "contextOut": [],
-        "source": "elsa-digitalMoM"
+        "source": "elsa-camera"
     }
 
 
