@@ -95,17 +95,24 @@ def processRequest(req):
                'displayText': output,
                'contextOut': req['result']['contexts']}
     
-    elif action == "camera_turn_on":
-        baseurl = "https://aaa7512d.ngrok.io/camera_turn_on"
-        content = urlopen(baseurl).read()
-        speech = "See your Raspberry camera is ON"
-        res = camera_response(speech)
-
-    elif action == "camera_turn_off":    
-        baseurl = "https://aaa7512d.ngrok.io/camera_turn_off"
-        content = urlopen(baseurl).read()
-        speech = "I just turn off your raspberry Camera"
-        res = camera_response(speech)
+    elif action == "camera_action":
+        text = req['result']['parameters'].get('text')
+        
+        if text == "turn on":
+            baseurl = "https://d50ff3f6.ngrok.io/camera_turn_on"
+            content = urlopen(baseurl).read()
+            speech = "See your Raspberry camera is ON"
+            res = camera_response(speech)
+            
+        elif text == "turn off":
+            baseurl = "https://d50ff3f6.ngrok.io/camera_turn_off"
+            content = urlopen(baseurl).read()
+            speech = "See your Raspberry camera is OFF"
+            res = camera_response(speech)
+        
+        else:
+            speech = "I don't understand your command"
+            res = camera_response(speech)
     else:
         # If the request is not to the translate.text action throw an error
         LOG.error('Unexpected action requested: %s', json.dumps(req))
