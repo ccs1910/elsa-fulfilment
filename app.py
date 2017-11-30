@@ -99,13 +99,13 @@ def processRequest(req):
         text = req['result']['parameters'].get('text')
         
         if text == "turn on" or text == "open" or text=="start":
-            baseurl = "https://cb7f63be.ngrok.io/camera_turn_on"
+            baseurl = "https://2c3425fb.ngrok.io/camera_turn_on"
             content = urlopen(baseurl).read()
             speech = "See your Raspberry camera is ON"
             res = camera_response(speech)
             
         elif text == "turn off" or text == "close" or text=="stop":
-            baseurl = "https://cb7f63be.ngrok.io/camera_turn_off"
+            baseurl = "https://2c3425fb.ngrok.io/camera_turn_off"
             content = urlopen(baseurl).read()
             speech = "See your Raspberry camera is OFF"
             res = camera_response(speech)
