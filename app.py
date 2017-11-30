@@ -98,13 +98,13 @@ def processRequest(req):
     elif action == "camera_action":
         text = req['result']['parameters'].get('text')
         
-        if text == "turn on" or text == "open" or text=="start":
+        if text.lower() == "turn on" or text.lower() == "open" or text.lower()=="start":
             baseurl = "https://2c3425fb.ngrok.io/camera_turn_on"
             content = urlopen(baseurl).read()
             speech = "See your Raspberry camera is ON"
             res = camera_response(speech)
             
-        elif text == "turn off" or text == "close" or text=="stop":
+        elif text.lower() == "turn off" or text.lower() == "close" or text.lower()=="stop":
             baseurl = "https://2c3425fb.ngrok.io/camera_turn_off"
             content = urlopen(baseurl).read()
             speech = "See your Raspberry camera is OFF"
